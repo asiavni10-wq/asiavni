@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מערכת ביקורי דירות</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f3f8;--bg2:#ffffff;--bg3:#e8edf5;--card:#ffffff;--border:#d4dae8;
+  --navy:#1a2f6e;--accent:#1a4fbd;--gold:#c8930a;--green:#16a34a;--red:#dc2626;
+  --text:#1a2035;--text2:#4a5570;--text3:#8a93a8;--radius:10px;
+  --shadow:0 2px 12px rgba(26,47,100,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Heebo,sans-serif;background:var(--bg);color:var(--text);direction:rtl;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:220px;background:var(--navy);color:white;display:flex;flex-direction:column;position:fixed;right:0;top:0;bottom:0;z-index:100;}
+.sb-logo{padding:20px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sb-logo .t1{font-size:17px;font-weight:700;}
+.sb-logo .t2{font-size:11px;opacity:0.5;margin-top:2px;}
+.sb-proj{padding:12px 20px;background:rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.1);cursor:pointer;}
+.sb-proj .pl{font-size:10px;opacity:0.5;text-transform:uppercase;letter-spacing:0.5px;}
+.sb-proj .pn{font-size:12px;font-weight:600;color:#f5c842;margin-top:2px;line-height:1.3;}
+.sb-sec{font-size:10px;font-weight:700;opacity:0.35;text-transform:uppercase;letter-spacing:1px;padding:14px 20px 4px;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:rgba(255,255,255,0.65);font-size:14px;border-right:3px solid transparent;transition:all 0.15s;}
+.ni:hover{background:rgba(255,255,255,0.08);color:white;}
+.ni.active{background:rgba(255,255,255,0.12);color:white;border-right-color:#f5c842;}
+.main{margin-right:220px;padding:24px 28px;min-height:100vh;}
+.page{display:none;}.page.active{display:block;}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.ph-t{font-size:22px;font-weight:700;}
+.ph-s{font-size:13px;color:var(--text2);margin-top:2px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:Heebo,sans-serif;font-size:14px;font-weight:500;transition:all 0.15s;}
+.bp{background:var(--accent);color:white;}.bp:hover{background:#1340a0;}
+.bs{background:var(--bg3);color:var(--text);border:1px solid var(--border);}.bs:hover{background:var(--border);}
+.bg{background:#f5c842;color:#1a1200;font-weight:700;}
+.bd{background:rgba(220,38,38,0.1);color:var(--red);border:1px solid rgba(220,38,38,0.2);}
+.bsm{padding:5px 11px;font-size:12px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
+.ct{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap;}
+th{background:var(--bg3);padding:9px 12px;text-align:right;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:rgba(26,79,189,0.03);}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.bg-g{background:rgba(22,163,74,0.12);color:var(--green);}
+.bg-y{background:rgba(200,147,10,0.12);color:var(--gold);}
+.bg-b{background:rgba(26,79,189,0.12);color:var(--accent);}
+.fg{margin-bottom:12px;}
+.fl{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;display:block;}
+.fi,.fs,.ft{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:Heebo,sans-serif;font-size:14px;outline:none;transition:border-color 0.15s;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--accent);background:white;}
+.ft{resize:vertical;min-height:80px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.tabs{display:flex;gap:3px;padding:4px;background:var(--bg3);border-radius:9px;border:1px solid var(--border);margin-bottom:18px;}
+.tab{padding:8px 14px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-radius:6px;transition:all 0.15s;white-space:nowrap;}
+.tab:hover{color:var(--text);background:rgba(255,255,255,0.6);}
+.tab.active{background:white;color:var(--accent);font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.tc{display:none;}.tc.active{display:block;}
+.tg{display:flex;gap:6px;flex-wrap:wrap;}
+.tb{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:white;color:var(--text2);cursor:pointer;font-size:13px;transition:all 0.15s;}
+.tb.active{background:var(--accent);color:white;border-color:var(--accent);}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,30,80,0.55);z-index:1000;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:white;border-radius:14px;padding:26px;width:90%;max-width:580px;max-height:90vh;overflow-y:auto;position:relative;}
+.mt{font-size:18px;font-weight:700;margin-bottom:18px;}
+.mc{position:absolute;top:14px;left:18px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);}
+.owner-row{background:var(--bg3);border-radius:9px;padding:12px;margin-bottom:8px;}
+.fr{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border-radius:8px;margin-bottom:7px;}
+.fn{flex:1;font-size:13px;}
+.fv{font-size:13px;font-weight:600;color:var(--green);min-width:50px;text-align:left;}
+.pb{display:flex;align-items:center;gap:8px;}
+.pbg{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;min-width:60px;}
+.pbf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#7c3aed);}
+.pbn{font-size:12px;font-weight:700;color:var(--accent);min-width:36px;}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:7px;margin-top:8px;}
+.pt{aspect-ratio:1;border-radius:7px;overflow:hidden;border:1px solid var(--border);position:relative;}
+.pt img{width:100%;height:100%;object-fit:cover;}
+.dp{position:absolute;top:3px;left:3px;background:rgba(0,0,0,0.55);border:none;color:white;width:18px;height:18px;border-radius:50%;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.pt:hover .dp{display:flex;}
+.ua{border:2px dashed var(--border);border-radius:9px;padding:24px;text-align:center;cursor:pointer;color:var(--text2);transition:all 0.2s;}
+.ua:hover{border-color:var(--accent);color:var(--text);background:rgba(26,79,189,0.04);}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
+.sl{font-size:12px;color:var(--text3);margin-bottom:5px;}
+.sv{font-size:26px;font-weight:700;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.si{background:white;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:Heebo,sans-serif;font-size:14px;outline:none;width:240px;transition:border-color 0.15s;}
+.si:focus{border-color:var(--accent);}
+hr.d{border:none;border-top:1px solid var(--border);margin:14px 0;}
+
+/* ===== MOBILE TABLE FIX ===== */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden !important; width: 100%; }
+  .main { overflow-x: hidden !important; width: 100%; box-sizing: border-box; }
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100vw; }
+  table { font-size: 11px; min-width: 600px; }
+  th, td { padding: 5px 4px; white-space: nowrap; }
+  .btn.bsm { padding: 4px 8px; font-size: 11px; }
+  .ph-t { font-size: 17px; }
+  .badge { padding: 2px 6px; font-size: 10px; }
+  .si { width: 150px !important; font-size: 13px; }
+  .card { padding: 12px 10px; }
+  .ph { flex-direction: column; gap: 8px; align-items: flex-start; }
+  /* Hide less important columns on mobile */
+  table th:nth-child(2), table td:nth-child(2),
+  table th:nth-child(6), table td:nth-child(6) { display: none; }
+}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-logo"><div class="t1">שמאות מקרקעין</div><div class="t2">מערכת ביקורי דירות</div></div>
+  <div class="sb-proj" onclick="goPage('projects')">
+    <div class="pl">פרויקט פעיל</div>
+    <div class="pn">פינוי-בינוי ראש פינה</div>
+  </div>
+  <nav style="flex:1;padding:10px 0;">
+    <div class="sb-sec">ניהול</div>
+    <div class="ni" id="ni-projects" onclick="goPage('projects')"><span>🏘️</span> פרויקטים</div>
+    <div class="ni active" id="ni-apartments" onclick="goPage('apartments')"><span>🏠</span> דירות</div>
+    <div class="sb-sec">עבודה שוטפת</div>
+    <div class="ni" id="ni-visit" onclick="goPage('visit')"><span>📋</span> טופס ביקור</div>
+    <div class="ni" id="ni-scoring" onclick="goPage('scoring')"><span>⭐</span> ניקוד</div>
+    <div class="sb-sec">ניתוח</div>
+    <div class="ni" id="ni-dashboard" onclick="goPage('dashboard')"><span>📊</span> דשבורד</div>
+    <div class="sb-sec">הגדרות</div>
+    <div class="ni" id="ni-settings" onclick="goPage('settings')"><span>⚙️</span> הגדרות</div>
+  </nav>
+</aside>
+<main class="main">
+
+<!-- PROJECTS -->
+<div class="page" id="page-projects">
+  <div class="ph"><div><div class="ph-t">פרויקטים</div></div><button class="btn bp" onclick="openM('m-proj')">+ פרויקט חדש</button></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+    <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;border-right:4px solid var(--accent);" onclick="goPage('apartments')">
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px;">פינוי-בינוי ראש פינה</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">גוש 13962 — חלקות 10,30,31,32,33,34,35<br>הברוש 121 + רמת גן 224-229</div>
+      <div style="display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+        <div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--accent);">81</div><div style="font-size:11px;color:var(--text3);">דירות</div></div>
+        <div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--green);">0</div><div style="font-size:11px;color:var(--text3);">בוקרו</div></div>
+        <div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--gold);">81</div><div style="font-size:11px;color:var(--text3);">ממתינות</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APARTMENTS -->
+<div class="page active" id="page-apartments">
+  <div class="ph">
+    <div><div class="ph-t">דירות במתחם</div><div class="ph-s" id="apts-sub">טוען...</div></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <input class="si" placeholder="חיפוש שם / כתובת / ת.ח." oninput="filterTable(this.value)">
+      <button class="btn bs" onclick="toggleFilterPanel()" id="filter-btn">&#9660; סינון</button>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="btn bs" id="vstatus-all" onclick="setVisitFilter('all')" style="font-size:12px;padding:6px 10px;font-weight:700;border-color:var(--accent);color:var(--accent);">הכל</button>
+        <button class="btn bs" id="vstatus-done" onclick="setVisitFilter('done')" style="font-size:12px;padding:6px 10px;">&#10003; בוקרו</button>
+        <button class="btn bs" id="vstatus-pending" onclick="setVisitFilter('pending')" style="font-size:12px;padding:6px 10px;">&#9711; ממתינות</button>
+        <button class="btn bs" id="aflt-approved" onclick="setApprovalFilter('approved')" style="font-size:12px;padding:6px 10px;">&#10003;&#10003; אושרו</button>
+        <button class="btn bs" id="aflt-pending-approval" onclick="setApprovalFilter('pending-approval')" style="font-size:12px;padding:6px 10px;color:var(--red);">&#9679; ממתין לאישור</button>
+        <button class="btn bs" id="aflt-all" onclick="setApprovalFilter('all')" style="font-size:12px;padding:6px 10px;">כל הביקורות</button>
+      </div>
+      <button class="btn bp" onclick="goPage('visit')">+ ביקור</button>
+    </div>
+  </div>
+  <div id="visit-stats" style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:140px;background:white;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">בוצע ביקור</div>
+      <div style="display:flex;align-items:baseline;gap:6px;">
+        <span id="stat-done-n" style="font-size:22px;font-weight:700;color:var(--green);">0</span>
+        <span id="stat-done-pct" style="font-size:13px;color:var(--green);">0%</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:140px;background:white;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">ממתינות לביקור</div>
+      <div style="display:flex;align-items:baseline;gap:6px;">
+        <span id="stat-pending-n" style="font-size:22px;font-weight:700;color:var(--gold);">0</span>
+        <span id="stat-pending-pct" style="font-size:13px;color:var(--gold);">0%</span>
+      </div>
+    </div>
+    <div style="flex:2;min-width:200px;background:white;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;display:flex;flex-direction:column;justify-content:center;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px;">
+        <span>התקדמות</span>
+        <span id="stat-total-label">0 / 0</span>
+      </div>
+      <div style="height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;">
+        <div id="stat-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green),#22c55e);border-radius:5px;transition:width 0.4s;"></div>
+      </div>
+    </div>
+  </div>
+  <div id="filter-panel" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+      <div>
+        <label style="font-size:12px;font-weight:600;color:var(--navy);display:block;margin-bottom:4px;">סנן לפי</label>
+        <select id="flt-type" class="fs" style="min-width:150px;" onchange="onFilterTypeChange()">
+          <option value="">-- בחר סוג --</option>
+          <option value="helka">חלקה</option>
+          <option value="address">כתובת</option>
+        </select>
+      </div>
+      <button class="btn bs" onclick="resetFilters()" style="color:var(--red);">&#215; נקה</button>
+    </div>
+    <div id="flt-checks-wrap" style="display:none;margin-top:12px;">
+      <div id="flt-checks-label" style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px;"></div>
+      <div id="flt-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+    <div id="filter-active-msg" style="display:none;margin-top:10px;font-size:12px;color:var(--accent);font-weight:600;"></div>
+  </div>
+  <div class="card" style="padding:0;">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>גוש</th><th>חלקה</th><th>ת.ח.</th>
+          <th>שם בעלים</th><th>ת.ז.</th>
+          <th>רחוב</th><th>בניין</th><th>קומה</th><th>שטח</th>
+          <th>סטטוס</th><th>ציון</th><th>ביקורת מנהל</th><th></th>
+        </tr></thead>
+        <tbody id="apts-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VISIT FORM -->
+<div class="page" id="page-visit">
+  <div class="ph">
+    <div><div class="ph-t">טופס ביקור</div><div class="ph-s" id="visit-sub">בחר דירה</div></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn bs" onclick="goPage('apartments')">חזרה</button>
+      <button class="btn bg" onclick="alert('ביקור נשמר!')">שמור ביקור</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'tc-basic')">פרטי הדירה</div>
+    <div class="tab" onclick="switchTab(this,'tc-cond')">מצב תחזוקה</div>
+    <div class="tab" onclick="switchTab(this,'tc-score')">ניקוד</div>
+    <div class="tab" onclick="switchTab(this,'tc-photos')">תמונות</div>
+    <div class="tab" onclick="switchTab(this,'tc-notes')">הערות</div>
+  </div>
+
+  <div class="tc active" id="tc-basic">
+    <div class="card" style="background:rgba(26,79,189,0.04);border-color:rgba(26,79,189,0.2);">
+      <div class="ct">נסח טאבו</div>
+      <div class="g3">
+        <div class="fg"><label class="fl">גוש</label><input class="fi" id="v-gush" readonly style="opacity:0.7;"></div>
+        <div class="fg"><label class="fl">חלקה</label><input class="fi" id="v-helka" readonly style="opacity:0.7;"></div>
+        <div class="fg"><label class="fl">תת-חלקה</label><input class="fi" id="v-tat" readonly style="opacity:0.7;"></div>
+        <div class="fg"><label class="fl">רחוב</label><input class="fi" id="v-street"></div>
+        <div class="fg"><label class="fl">מספר בניין</label><input class="fi" id="v-bld"></div>
+        <div class="fg"><label class="fl">מספר דירה</label><input class="fi" id="v-aptnum" placeholder="5"></div>
+        <div class="fg"><label class="fl">קומה</label><input class="fi" id="v-floor" readonly style="opacity:0.7;"></div>
+        <div class="fg"><label class="fl">שטח (מ"ר)</label><input class="fi" id="v-area" type="number"></div>
+        <div class="fg"><label class="fl">חניה</label><input class="fi" id="v-park" readonly style="opacity:0.7;"></div>
+      </div>
+      <hr class="d">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="ct" style="margin:0;">פרטי בעלים</div>
+        <button class="btn bsm bs" onclick="addOwner()">+ הוסף בעלים</button>
+      </div>
+      <div id="owners-list"></div>
+    </div>
+    <div class="card" style="background:rgba(22,163,74,0.04);border-color:rgba(22,163,74,0.2);">
+      <div class="ct">פרטי הביקור</div>
+      <div class="g3">
+        <div class="fg"><label class="fl">תאריך ביקור</label><input class="fi" type="date" id="v-date"></div>
+      <div class="fg"><label class="fl">שמאי מבקר</label><select class="fs"><option>אסי אבני</option><option>שמאי נוסף</option></select></div>
+        <div class="fg" style="grid-column:span 2;"><label class="fl">מי מתגורר</label>
+          <div class="tg">
+            <div class="tb active" onclick="toggleG(this,'res')">הבעלים</div>
+            <div class="tb" onclick="toggleG(this,'res')">שוכרים</div>
+            <div class="tb" onclick="toggleG(this,'res')">ריקה ופנויה</div>
+            <div class="tb" onclick="toggleG(this,'res')">אינה ראויה למגורים</div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">שם איש קשר</label><input class="fi" placeholder="שם מלא"></div>
+        <div class="fg"><label class="fl">טלפון</label><input class="fi" type="tel" placeholder="05X-XXXXXXX"></div>
+        <div class="fg"><label class="fl">קשר לבעלים</label><select class="fs"><option>הבעלים עצמו</option><option>בן/בת זוג</option><option>ילד/ה</option><option>שוכר/ת</option><option>אחר</option></select></div>
+      </div>
+      <hr class="d">
+      <div class="ct">מציג הנכס</div>
+      <div class="g3">
+        <div class="fg"><label class="fl">סוג מציג</label>
+          <div class="tg"><div class="tb active" onclick="toggleG(this,'pres')">הבעלים</div><div class="tb" onclick="toggleG(this,'pres')">שוכר</div><div class="tb" onclick="toggleG(this,'pres')">אחר</div></div>
+        </div>
+        <div class="fg"><label class="fl">שם מציג</label><input class="fi" id="pname" placeholder="שם מלא"></div>
+        <div class="fg"><label class="fl">ת.ז. מציג</label><input class="fi" id="pid" placeholder="תעודת זהות"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">צילום תעודת זהות</label>
+        <div class="ua" onclick="document.getElementById('id-inp').click();" style="padding:14px;">
+          <div style="font-size:22px;">📋</div><div style="font-size:13px;margin-top:4px;">לחץ לצילום / העלאת ת.ז.</div>
+        </div>
+        <input type="file" id="id-inp" accept="image/*" style="display:none;" onchange="showId(event)">
+        <div id="id-prev" style="display:none;margin-top:8px;">
+          <img id="id-img" style="max-width:260px;border-radius:7px;border:1px solid var(--border);">
+          <div style="margin-top:5px;"><button class="btn bsm bd" onclick="clearId()">הסר</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">פרטי הדירה</div>
+      <div class="g3">
+        <div class="fg"><label class="fl">מספר חדרים</label><select class="fs"><option>2</option><option>2.5</option><option>3</option><option>3.5</option><option>4</option><option>4.5</option><option>5</option><option>5+</option></select></div>
+        <div class="fg"><label class="fl">מחסן</label><div class="tg"><div class="tb active" onclick="toggleG(this,'mach')">כן</div><div class="tb" onclick="toggleG(this,'mach')">לא</div></div></div>
+        <div class="fg"><label class="fl">מרפסת</label><div class="tg"><div class="tb active" onclick="toggleG(this,'marp')">כן</div><div class="tb" onclick="toggleG(this,'marp')">לא</div></div></div>
+        <div class="fg"><label class="fl">נגישות</label><div class="tg"><div class="tb" onclick="toggleG(this,'nagg')">כן</div><div class="tb active" onclick="toggleG(this,'nagg')">לא</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tc" id="tc-cond">
+    <div class="card"><div class="ct">ריצוף</div>
+      <div id="floor-rows">
+        <div class="fr">
+          <select class="fs" style="flex:1;"><option>כל הדירה</option><option>סלון + מסדרון</option><option>חדרי שינה</option><option>מטבח</option></select>
+          <select onchange="calcScore()" class="fs" style="flex:1.5;"><option>— סוג ריצוף —</option><option>טראצו</option><option>שיש פרלטו</option><option>גרניט פורצלן</option><option>קרמיקה</option><option>פרקט עץ</option></select>
+          <button class="btn bsm bs" onclick="addFloor()">+ אזור נוסף</button>
+        </div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">דלתות פנים</div>
+        <select onchange="calcScore()" class="fs">
+          <option>— בחר —</option>
+          <option>חדשות</option>
+          <option>רגילות</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="ct">דלת כניסה</div>
+        <select onchange="calcScore()" class="fs">
+          <option>— בחר —</option>
+          <option>פלדלת</option>
+          <option>עץ</option>
+          <option>ברזל</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="ct">חלונות</div>
+        <select onchange="calcScore()" class="fs">
+          <option>— בחר —</option>
+          <option>אלומיניום ישן</option>
+          <option>אלומיניום חדש</option>
+          <option>עץ</option>
+        </select>
+      </div>
+      <div class="card">
+        <div class="ct">מיזוג אוויר</div>
+        <select onchange="calcScore()" class="fs">
+          <option>— בחר —</option>
+          <option>אין</option>
+          <option>מזגנים מפוצלים</option>
+          <option>מזגן מרכזי</option>
+          <option>מזגן מפוצל + מרכזי</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- מטבח -->
+    <div class="card">
+      <div class="ct">מטבח</div>
+      <div class="g2">
+        <div class="fg">
+          <label class="fl">סוג ארונות</label>
+          <select onchange="calcScore()" class="fs">
+            <option>— בחר —</option>
+            <option>ארונות עליונים ותחתונים</option>
+            <option>ארונות תחתונים בלבד</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">מצב המטבח</label>
+          <div class="tg">
+            <div class="tb" onclick="toggleG(this,'kit-q');calcScore()">איכות פשוטה</div>
+            <div class="tb active" onclick="toggleG(this,'kit-q');calcScore()">רגילה</div>
+            <div class="tb" onclick="toggleG(this,'kit-q');calcScore()">טובה</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- חדר רחצה -->
+    <div class="card">
+      <div class="ct">חדר רחצה</div>
+      <div class="g2">
+        <div class="fg">
+          <label class="fl">ריצוף</label>
+          <select class="fs" id="bath-floor-type" onchange="toggleBathOther()">
+            <option>— בחר —</option>
+            <option>טראצו</option>
+            <option>קרמיקה</option>
+            <option>גרניט פורצלן</option>
+            <option value="other">אחר</option>
+          </select>
+          <input class="fi" id="bath-floor-other" placeholder="פרט..." style="display:none;margin-top:6px;">
+        </div>
+        <div class="fg">
+          <label class="fl">חיפוי</label>
+          <select onchange="calcScore()" class="fs">
+            <option>— בחר —</option>
+            <option>קרמיקה</option>
+            <option>חרסינה</option>
+            <option>ללא חיפוי</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">איכות כלים סניטריים</label>
+          <div class="tg">
+            <div class="tb" onclick="toggleG(this,'bath-q');calcScore()">פשוטה</div>
+            <div class="tb active" onclick="toggleG(this,'bath-q');calcScore()">רגילה</div>
+            <div class="tb" onclick="toggleG(this,'bath-q');calcScore()">טובה</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- הערות מצב תחזוקה -->
+    <div class="card">
+      <div class="ct">הערות מצב תחזוקה</div>
+      <textarea class="ft" placeholder="הערות חופשיות על מצב התחזוקה..." style="min-height:90px;"></textarea>
+    </div>
+  </div>
+
+  <div class="tc" id="tc-score">
+    <div class="card"><div class="ct">מקדמי ניקוד (בסיס 100)</div>
+      <div class="fr" style="background:rgba(26,79,189,0.06);border:1px solid rgba(26,79,189,0.2);border-radius:8px;">
+        <div style="flex:1;">
+          <div style="font-weight:600;font-size:13px;">מצב שיפוץ (אוטומטי) — מקסימום 15%</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">מחושב על בסיס טופס מצב תחזוקה</div>
+          <div id="renov-breakdown" style="font-size:11px;color:var(--text3);margin-top:4px;"></div>
+        </div>
+        <span class="fv" id="fr1" style="font-size:16px;min-width:55px;text-align:left;">+0.0</span>
+      </div>
+      <div class="fr"><span class="fn">נגישות לנכים</span>
+        <select class="fs" style="width:200px;" onchange="calcScore()"><option value="0" selected>לא נגיש (0%)</option><option value="7">נגיש (+7%)</option></select>
+        <span class="fv" id="fr2">0.0</span>
+      </div>
+      <div class="fr"><span class="fn">קומה</span>
+        <div style="flex:1;">קומה <strong id="fl-num">1</strong> — מקדם: <strong id="fl-fac">1.000</strong></div>
+        <span class="fv" id="fr3">0.0</span>
+      </div>
+      <div class="fr"><span class="fn">נוף</span>
+        <select class="fs" style="width:200px;" onchange="calcScore()"><option value="0" selected>נוף חסום / עירוני רגיל (0%)</option><option value="7">נוף פתוח / ירוק (7%)</option><option value="15">נוף פרימיום — ים (15%)</option></select>
+        <span class="fv" id="fr4">0.0</span>
+      </div>
+      <div id="extra-fac"></div>
+      <button class="btn bsm bs" style="margin-top:8px;" onclick="addFac()">+ מקדם נוסף</button>
+      <hr class="d">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg3);border-radius:8px;margin-bottom:12px;">
+        <span style="font-size:15px;font-weight:600;">ציון סופי</span>
+        <span style="font-size:30px;font-weight:800;color:var(--gold);" id="final-sc">110.0</span>
+      </div>
+      <hr class="d">
+      <!-- MANAGER APPROVAL -->
+      <div id="approval-section" style="padding:14px;border-radius:10px;border:2px dashed var(--border);background:white;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--navy);">אישור שמאי ראשי</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;" id="approval-status-text">ממתין לאישור</div>
+          </div>
+          <button id="approval-btn" class="btn" onclick="toggleApprovalFromScore()"
+            style="background:rgba(200,147,10,0.12);color:var(--gold);border:1px solid var(--gold);font-weight:600;padding:10px 20px;">
+            &#9711; ממתין לאישור
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tc" id="tc-photos">
+    <div class="card"><div class="ct">תמונות הדירה</div>
+      <div class="ua" onclick="document.getElementById('ph-inp').click();">
+        <div style="font-size:30px;">📸</div><div style="font-size:14px;margin-top:6px;">לחץ להוספת תמונות</div>
+      </div>
+      <input type="file" id="ph-inp" accept="image/*" multiple style="display:none;" onchange="addPhotos(event)">
+      <div class="pg" id="photo-g"></div>
+    </div>
+  </div>
+
+  <div class="tc" id="tc-notes">
+    <div class="card"><div class="ct">הערות כלליות</div><textarea class="ft" style="min-height:140px;" placeholder="הערות חופשיות..."></textarea></div>
+    <div class="card"><div class="ct">דגלים</div>
+      <div class="tg" style="margin-bottom:10px;">
+        <div class="tb" onclick="this.classList.toggle('active')">רטיבות</div>
+        <div class="tb" onclick="this.classList.toggle('active')">עובש</div>
+        <div class="tb" onclick="this.classList.toggle('active')">סדקים</div>
+        <div class="tb" onclick="this.classList.toggle('active')">חריגות בנייה</div>
+        <div class="tb" onclick="this.classList.toggle('active')">הערת אזהרה</div>
+      </div>
+      <textarea class="ft" placeholder="פרט בעיות..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- SCORING -->
+<div class="page" id="page-scoring">
+  <div class="ph"><div class="ph-t">ניקוד וקבוצות שטח</div></div>
+  <div class="card"><p style="color:var(--text2);font-size:13px;">לאחר ביצוע ביקורים, הדירות יקובצו לפי שטח (הפרש עד 2 מ"ר) אוטומטית.</p></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="ph"><div class="ph-t">דשבורד</div></div>
+  <div class="g4" style="margin-bottom:18px;">
+    <div class="sc"><div class="sl">סה"כ דירות</div><div class="sv" style="color:var(--accent);">81</div></div>
+    <div class="sc"><div class="sl">בוקרו</div><div class="sv" style="color:var(--green);">0</div></div>
+    <div class="sc"><div class="sl">ממתינות</div><div class="sv" style="color:var(--gold);">81</div></div>
+    <div class="sc"><div class="sl">ממוצע ציון</div><div class="sv" style="color:var(--text3);">—</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="ph"><div class="ph-t">הגדרות פרויקט</div></div>
+  <div class="card"><div class="ct">צוות שמאים</div><div style="padding:10px 0;border-bottom:1px solid var(--border);"><strong>אסי אבני</strong> — מנהל פרויקט</div></div>
+</div>
+
+</main>
+</div>
+
+<div class="modal-bg" id="m-proj">
+  <div class="modal">
+    <button class="mc" onclick="closeM('m-proj')">x</button>
+    <div class="mt">פרויקט חדש</div>
+    <div class="fg"><label class="fl">שם הפרויקט</label><input class="fi" placeholder="פינוי-בינוי ..."></div>
+    <div class="fg"><label class="fl">כתובת</label><input class="fi" placeholder="רחוב, עיר"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn bs" onclick="closeM('m-proj')">ביטול</button>
+      <button class="btn bp" onclick="closeM('m-proj')">צור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var APTS = [{"seq":"1","gush":"13962","helka":"10","tat":"1","area":"78.38","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d9\u05e8\u05d3\u05e0\u05d9 \u05d0\u05dc\u05d9\u05d4\u05d5 \u05d0\u05d9\u05d6\u05d9\u05e7","id":"53221354","phone":"054-4207195"}]},{"seq":"2","gush":"13962","helka":"10","tat":"2","area":"77.83","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d0\u05de\u05d9\u05e8 \u05e4\u05e8\u05d3\u05d9","id":"38278503","phone":"054-5497366"}]},{"seq":"3","gush":"13962","helka":"10","tat":"3","area":"78.38","floor":"\u05e9\u05e0\u05d9\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05dc\u05d5\u05d9\u05df \u05e9\u05e8\u05d5\u05df","id":"12717468","phone":"052-3895760"}]},{"seq":"4","gush":"13962","helka":"10","tat":"4","area":"77.83","floor":"\u05e9\u05e0\u05d9\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d1\u05e8\u05e7\u05d5\u05d1\u05d9\u05e5 \u05d0\u05d9\u05d9\u05dc\u05ea","id":"31952773","phone":"052-8515246"}]},{"seq":"5","gush":"13962","helka":"10","tat":"5","area":"78.38","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d0\u05d1\u05df \u05e1\u05d9\u05d2\u05dc\u05d9\u05ea","id":"24684706","phone":"058-3258488"}]},{"seq":"6","gush":"13962","helka":"10","tat":"6","area":"77.83","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"\u05d1\u05e2\u05dc\u05d9\u05dd \u05e0\u05d5\u05e1\u05e3 \u05dc\u05e8\u05d4 \u05d2\u05de\u05dc\u05d9\u05d0\u05dc\u05d9","owners":[{"name":"\u05dc\u05d0\u05e8\u05d4 \u05d2\u05de\u05d9\u05d0\u05dc\u05d9","id":"","phone":"052-4590121"},{"name":"\u05d9\u05d5\u05e1\u05e3 \u05d2\u05de\u05dc\u05d9\u05d0\u05dc\u05d9","id":"39936315","phone":"052-4581595"}]},{"seq":"7","gush":"13962","helka":"10","tat":"7","area":"78.38","floor":"\u05e9\u05e0\u05d9\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05db\u05e8\u05de\u05dc \u05e0\u05d5\u05d9","id":"209451509","phone":"052-3108884"}]},{"seq":"8","gush":"13962","helka":"10","tat":"8","area":"78.38","floor":"\u05e9\u05e0\u05d9\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d9\u05e8\u05d3\u05e0\u05d9 \u05e2\u05de\u05d9\u05ea \u05de\u05d9\u05db\u05d0\u05dc","id":"39704945","phone":"054-7022308"}]},{"seq":"9","gush":"13962","helka":"10","tat":"9","area":"77.83","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d0\u05d1\u05e8\u05d4\u05dd \u05d0\u05dc\u05d9\u05de\u05dc\u05da","id":"50205715","phone":"052-3668823"},{"name":"\u05e2\u05d3\u05e0\u05d4 \u05d0\u05dc\u05d9\u05de\u05dc\u05da","id":"50631381","phone":""}]},{"seq":"10","gush":"13962","helka":"10","tat":"10","area":"78.38","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05d7\u05e1\u05d9\u05d3\u05d5\u05e3 \u05d8\u05d5\u05e8\u05e1(\u05e8\u05d5\u05d1\u05d9\u05df) \u05d9\u05e2\u05dc","id":"22670400","phone":"054-5827676"}]},{"seq":"11","gush":"13962","helka":"10","tat":"11","area":"77.83","floor":"\u05e9\u05e0\u05d9\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05dc\u05d1\u05d9\u05d0 \u05e0\u05d9\u05e8","id":"27751783","phone":"050-6221306"},{"name":"\u05de\u05d5\u05e9\u05e7\u05d5\u05d1\u05d9\u05e5 \u05d9\u05d5\u05e0\u05d4","id":"24189292","phone":""}]},{"seq":"12","gush":"13962","helka":"10","tat":"12","area":"78.38","floor":"\u05e9\u05e0\u05d9\u05d4","street":"\u05d4\u05d1\u05e8\u05d5\u05e9","building":"121","notes":"","owners":[{"name":"\u05de\u05d2\u05d5\u05d6 \u05d1\u05e0\u05d9","id":"37720836","phone":"050-2244544"},{"name":"\u05de\u05d5\u05d6\u05e1 \u05de\u05d2\u05d5\u05d6 \u05e2\u05e0\u05ea","id":"66503848","phone":""}]},{"seq":"13","gush":"13962","helka":"30","tat":"1","area":"45.15","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"***\u05e0\u05e4\u05d8\u05e8\u05d4***","owners":[{"name":"\u05d6\u05dc\u05d9\u05e0\u05d2\u05e8 \u05e9\u05e8\u05d4","id":"6028989","phone":""},{"name":"\u05d1\u05e8\u05d5\u05df \u05d4\u05d1\u05df \u05e9\u05dc\u05d4","id":"","phone":"052-8289393"}]},{"seq":"14","gush":"13962","helka":"30","tat":"2","area":"45.15","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e2\u05d5\u05d1\u05d3\u05d9\u05d4 \u05d9\u05e2\u05e7\u05d1","id":"24598054","phone":"054-2277277"},{"name":"\u05e2\u05d5\u05d1\u05d3\u05d9\u05d4 \u05e4\u05dc\u05d5\u05e8\u05d9 \u05e4\u05e8\u05d7\u05d4","id":"28877116","phone":"054-6464923"}]},{"seq":"15","gush":"13962","helka":"30","tat":"3","area":"45.15","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e9\u05d7\u05e8\u05d5\u05e8 \u05d9\u05e1\u05de\u05d9\u05df","id":"27337757","phone":"050-7903493"}]},{"seq":"16","gush":"13962","helka":"30","tat":"4","area":"45.15","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d0\u05d3\u05e8\u05d9 \u05d0\u05e1\u05ea\u05e8","id":"23044266","phone":""},{"name":"\u05d0\u05d3\u05e8\u05d9 \u05e8\u05d0\u05d5\u05d1\u05df","id":"58776717","phone":"053-7735835"}]},{"seq":"17","gush":"13962","helka":"30","tat":"5","area":"45.15","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d7\u05e1\u05d9\u05d3 \u05d0\u05e6\u05dd","id":"25346735","phone":""},{"name":"\u05d7\u05e1\u05d9\u05d3 \u05de\u05e8\u05dc\u05d4","id":"11456605","phone":"050-5427567"}]},{"seq":"18","gush":"13962","helka":"30","tat":"6","area":"45.15","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"19","gush":"13962","helka":"30","tat":"7","area":"90.3","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"20","gush":"13962","helka":"30","tat":"8","area":"45.15","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05e0\u05e4\u05d8\u05e8\u05d5, \u05d9\u05e2\u05e7\u05d1 \u05d4\u05d1\u05df \u05e9\u05dc\u05d4\u05dd - 054-2277276","owners":[{"name":"\u05e2\u05d5\u05d1\u05d3\u05d9\u05d4 \u05e9\u05dc\u05d5\u05dd","id":"68454024","phone":""},{"name":"\u05e2\u05d5\u05d1\u05d3\u05d9\u05d4 \u05d0\u05d9\u05d6\u05d4","id":"68454032","phone":""}]},{"seq":"21","gush":"13962","helka":"30","tat":"9","area":"45.15","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e7\u05d5\u05e9\u05e0\u05d9\u05e8 \u05e8\u05d0\u05d9\u05e1\u05d4","id":"307191759","phone":"054-6798001"}]},{"seq":"22","gush":"13962","helka":"30","tat":"10","area":"45.15","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e9\u05e0\u05d9\u05d9\u05d3\u05e8 \u05d0\u05d5\u05e8\u05df","id":"68027689","phone":""},{"name":"\u05e9\u05e0\u05d9\u05d9\u05d3\u05e8 \u05e7\u05e8\u05d5\u05dc\u05d9\u05e0\u05d4 \u05d9\u05d4\u05d5\u05d3\u05d9\u05ea","id":"11324159","phone":"050-7300320"}]},{"seq":"23","gush":"13962","helka":"30","tat":"11","area":"45.15","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d1\u05df \u05d3\u05d1 \u05dc\u05d9\u05e4\u05d6","id":"28860088","phone":"050-2887622"}]},{"seq":"24","gush":"13962","helka":"31","tat":"1","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e9\u05e4\u05d8 \u05e4\u05e0\u05d9\u05e0\u05d4","id":"443408","phone":"052-5741210"}]},{"seq":"25","gush":"13962","helka":"31","tat":"3","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"26","gush":"13962","helka":"31","tat":"4","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"27","gush":"13962","helka":"31","tat":"5","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"28","gush":"13962","helka":"31","tat":"6","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"29","gush":"13962","helka":"31","tat":"7","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d5\u05d9\u05d8\u05e8\u05e7 \u05ea\u05de\u05dd \u05d0\u05e8\u05d6","id":"22451116","phone":"054-4474908"}]},{"seq":"30","gush":"13962","helka":"31","tat":"8","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"31","gush":"13962","helka":"31","tat":"9","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e4\u05d0\u05e8\u05d2\u0027 \u05d0\u05d5\u05e8\u05d9\u05ea","id":"22737522","phone":""},{"name":"\u05dc\u05d9\u05d1\u05d5\u05d1\u05d9\u05e5 \u05d3\u05e0\u05d9\u05d0\u05dc\u05d4","id":"67862839","phone":"054-6649336"}]},{"seq":"32","gush":"13962","helka":"31","tat":"10","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e6\u05d0\u05d9\u05d8 \u05d4\u05e8\u05d5\u05d5\u05d9","id":"13850441","phone":""},{"name":"\u05e6\u05d0\u05d9\u05d8 \u05d0\u05d9\u05dc\u05e0\u05d4","id":"55918049","phone":"054-9428043"}]},{"seq":"33","gush":"13962","helka":"31","tat":"11","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05dc\u05d5\u05d1\u05df \u05e7\u05e8\u05e1\u05e0\u05d8\u05d9 \u05d7\u05d3\u05d5\u05d4","id":"35948025","phone":"050-7720782"}]},{"seq":"34","gush":"13962","helka":"31","tat":"12","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d1\u05df \u05e0\u05e2\u05d9\u05dd \u05de\u05d6\u05dc","id":"23030794","phone":"052-4894303"}]},{"seq":"35","gush":"13962","helka":"31","tat":"13","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"054-2277267- \u05e0\u05e4\u05d8\u05e8\u05d4, \u05e9\u05dc\u05de\u05d4 \u05d4\u05d1\u05df \u05e9\u05dc\u05d4","owners":[{"name":"\u05d0\u05d1\u05d9\u05d8\u05df \u05d6\u05d5\u05d4\u05e8\u05d4","id":"6838080","phone":""}]},{"seq":"36","gush":"13962","helka":"32","tat":"1","area":"44.71","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"37","gush":"13962","helka":"32","tat":"2","area":"44.71","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d0\u05dc\u05d9 \u05d3\u05d4\u05df","id":"27010875","phone":""},{"name":"\u05d3\u05d4\u05df \u05d9\u05e6\u05d7\u05e7","id":"5789036","phone":"050-8750084"}]},{"seq":"38","gush":"13962","helka":"32","tat":"3","area":"44.71","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05db\u05d8 \u05de\u05e8\u05e1\u05dc","id":"28011476","phone":"054-6949647"}]},{"seq":"39","gush":"13962","helka":"32","tat":"4","area":"44.71","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"40","gush":"13962","helka":"32","tat":"5","area":"44.71","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"41","gush":"13962","helka":"32","tat":"6","area":"44.71","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"42","gush":"13962","helka":"32","tat":"7","area":"44.71","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d1\u05df-\u05e0\u05e2\u05d9\u05dd \u05d9\u05e2\u05e7\u05d1","id":"6833101","phone":""}]},{"seq":"43","gush":"13962","helka":"32","tat":"8","area":"44.71","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d1\u05df-\u05e0\u05e2\u05d9\u05dd \u05d9\u05e2\u05e7\u05d1","id":"6833101","phone":""}]},{"seq":"44","gush":"13962","helka":"32","tat":"9","area":"44.71","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"45","gush":"13962","helka":"32","tat":"10","area":"44.71","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"46","gush":"13962","helka":"32","tat":"11","area":"44.71","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"47","gush":"13962","helka":"32","tat":"12","area":"44.71","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05e0\u05e4\u05d8\u05e8 - 052-6077807- \u05e9\u05dc\u05d5\u05dd \u05d4\u05d1\u05df \u05e9\u05dc\u05d5","owners":[{"name":"\u05d1\u05df \u05e0\u05e2\u05d9\u05dd \u05d9\u05e2\u05e7\u05d1","id":"06833101","phone":""}]},{"seq":"48","gush":"13962","helka":"33","tat":"1","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05e0\u05e4\u05d8\u05e8\u05d4 - 052-2962088- \u05e9\u05dc\u05de\u05d4 \u05d4\u05d1\u05df \u05e9\u05dc\u05d4","owners":[{"name":"\u05e1\u05e8\u05d8\u05d9 \u05d3\u05d5\u05e8\u05d9\u05ea","id":"4686703","phone":""}]},{"seq":"49","gush":"13962","helka":"33","tat":"2","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05e0\u05e4\u05d8\u05e8\u05d4 - 052-4842141- \u05d0\u05d4\u05d5\u05d1\u05d4 \u05d4\u05d1\u05ea \u05e9\u05dc\u05d4","owners":[{"name":"\u05e1\u05e8\u05d8\u05d9 \u05d3\u05d5\u05e8\u05d9\u05ea","id":"4686703","phone":""}]},{"seq":"50","gush":"13962","helka":"33","tat":"3","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"51","gush":"13962","helka":"33","tat":"4","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05e8\u05e9\u05d5\u05de\u05d4 \u05d4\u05e2\u05e8\u05ea \u05e9\u05db\u05d9\u05e8\u05d5\u05ea \u05dc\u05d8\u05d5\u05d1\u05ea \u05db\u05e8\u05de\u05dc \u05d0\u05d1\u05d9\u05d4\u05d5 \u05d5\u05e8\u05d5\u05ea\u05d9","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""},{"name":"\u05db\u05e8\u05de\u05dc \u05d0\u05d1\u05d9\u05d4\u05d5","id":"056148893","phone":"052-3794030"}]},{"seq":"52","gush":"13962","helka":"33","tat":"5","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05e2\u05d9\u05d3\u05df \u05e9\u05e8\u05d5\u05df","id":"38229134","phone":"054-3036091"}]},{"seq":"53","gush":"13962","helka":"33","tat":"6","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"54","gush":"13962","helka":"33","tat":"7","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e9\u05d8\u05e8\u05df \u05de\u05e9\u05d4","id":"057406472","phone":"052-4419988"},{"name":"\u05e9\u05d8\u05e8\u05df \u05d6\u05d0\u05d1 \u05e6\u05d1\u05d9","id":"023093297","phone":""}]},{"seq":"55","gush":"13962","helka":"33","tat":"8","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"56","gush":"13962","helka":"33","tat":"9","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05d2\u05d5\u05e8\u05e0\u05e9\u05d8\u05d9\u05df \u05d0\u05d5\u05dc\u05d2\u05d4","id":"304774516","phone":"052-7730906"}]},{"seq":"57","gush":"13962","helka":"33","tat":"10","area":"45.26","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05db\u05ea \u05e9\u05db\u05d9\u05e8\u05d5\u05ea \u05dc\u05d8\u05d5\u05d1\u05ea \u05db\u05d4\u05df \u05d8\u05dc","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"58","gush":"13962","helka":"33","tat":"11","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"59","gush":"13962","helka":"33","tat":"12","area":"45.26","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05d0\u05e9\u05e8\u05e3 \u05d0\u05d5\u05e8\u05dc\u05d9","id":"23564479","phone":"050-7283654"}]},{"seq":"60","gush":"13962","helka":"34","tat":"1","area":"46.64","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05e1\u05d8\u05d9\u05d1\u05e0\u05e1 \u05d0\u05d3\u05dd \u05d9\u05d4\u05d5\u05e0\u05ea\u05df \u05d2\u05e8\u05e9\u05d5\u05df","id":"11892601","phone":""}]},{"seq":"61","gush":"13962","helka":"34","tat":"2","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05de\u05dc\u05e0\u05d9\u05e7\u05d5\u05d1 \u05d2\u05e8\u05d9 \u05e4\u05d0\u05d5\u05dc","id":"13755350","phone":""},{"name":"\u05de\u05dc\u05e0\u05d9\u05e7\u05d5\u05d1 \u05e8\u05d7\u05dc \u05d0\u05d9\u05e8\u05d9\u05e1","id":"54299938","phone":"054-6437338"}]},{"seq":"62","gush":"13962","helka":"34","tat":"3","area":"46.2","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d2\u05d9\u05dc\u05ea-\u05d4\u05d9\u05dc\u05e1 \u05d0\u05d9\u05e8\u05d9\u05e1","id":"67173252","phone":"054-2635914"}]},{"seq":"63","gush":"13962","helka":"34","tat":"4","area":"46.2","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05d1\u05e8\u05e0\u05e9\u05d8\u05d9\u05df \u05e0\u05d3\u05d9\u05d4","id":"11769817","phone":"0524284828"}]},{"seq":"64","gush":"13962","helka":"34","tat":"5","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05dc\u05e4\u05d9\u05d3 \u05e0\u05d0\u05d5\u05d4","id":"51013084","phone":"052-2836129"}]},{"seq":"65","gush":"13962","helka":"34","tat":"6","area":"46.64","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05e1\u05e4\u05d5\u05e0\u05e8 \u05e9\u05e8\u05d9","id":"51732634","phone":"054-7602888"}]},{"seq":"66","gush":"13962","helka":"34","tat":"7","area":"46.64","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05db\u05ea \u05d7\u05db\u05d9\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e4\u05e8\u05e5 \u05e0\u05e2\u05de\u05d4","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"67","gush":"13962","helka":"34","tat":"8","area":"46.2","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05db\u05ea \u05d7\u05db\u05d9\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea\u05d6\u05d9\u05d9\u05d3 \u05d0\u05dc\u05db\u05e1\u05e0\u05d3\u05e8\u05d4","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"68","gush":"13962","helka":"34","tat":"9","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e1\u05d5\u05d9\u05e1\u05d4 \u05e8\u05d7\u05dc\u05d9","id":"27335868","phone":"052-8745000"}]},{"seq":"69","gush":"13962","helka":"34","tat":"10","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05e0\u05e4\u05d8\u05e8, 050-2582197-\u05e9\u05d9\u05e8\u05d9 \u05d4\u05d1\u05ea \u05e9\u05dc\u05d5","owners":[{"name":"\u05d8\u05d5\u05dc\u05d3\u05e0\u05d5 \u05d3\u05e0\u05d9\u05d0\u05dc","id":"64094501","phone":""}]},{"seq":"70","gush":"13962","helka":"34","tat":"11","area":"46.2","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e2\u05de\u05d9\u05d3\u05e8","owners":[{"name":"\u05d1\u05dc\u05d5\u05e1\u05d8\u05d5\u05e6\u05e7\u05d9 \u05d0\u05d5\u05dc\u05d2\u05d4","id":"307699819","phone":"054-6470509"}]},{"seq":"71","gush":"13962","helka":"34","tat":"12","area":"46.64","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"\u05d4\u05e2\u05e8\u05ea \u05d0\u05d6\u05d4\u05e8\u05d4 \u05dc\u05d8\u05d5\u05d1\u05ea \u05e1\u05e1 \u05e2\u05d5\u05e4\u05e8 \u05d5\u05e9\u05d5\u05e8 \u05de\u05d9\u05db\u05dc","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"72","gush":"13962","helka":"35","tat":"1","area":"46.64","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"73","gush":"13962","helka":"35","tat":"2","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e7\u05e6\u05d9\u05e8 \u05e0\u05d5\u05e2\u05dd","id":"05682439-4","phone":""},{"name":"\u05e7\u05e6\u05d9\u05e8 \u05e2\u05de\u05dc\u05d9\u05d4","id":"56728074","phone":"054-8189234"}]},{"seq":"74","gush":"13962","helka":"35","tat":"3","area":"93.28","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"75","gush":"13962","helka":"35","tat":"4","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"76","gush":"13962","helka":"35","tat":"5","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"77","gush":"13962","helka":"35","tat":"6","area":"46.64","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e4\u05e8\u05d9\u05d1\u05d9\u05d0\u05dc\u05e8 \u05de\u05d9\u05e7\u05d4","id":"64944606","phone":"054-6870777"}]},{"seq":"78","gush":"13962","helka":"35","tat":"7","area":"46.64","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"79","gush":"13962","helka":"35","tat":"8","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]},{"seq":"80","gush":"13962","helka":"35","tat":"9","area":"46.2","floor":"\u05e7\u05e8\u05e7\u05e2","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05d2\u05d5\u05e8\u05d3\u05d5\u05df \u05e0\u05d9\u05e6\u05df","id":"56147200","phone":"054-7975070"}]},{"seq":"81","gush":"13962","helka":"35","tat":"10","area":"93.28","floor":"\u05e8\u05d0\u05e9\u05d5\u05e0\u05d4","street":"\u05e8\u05de\u05ea","building":"\u05d2\u05df","notes":"","owners":[{"name":"\u05e8\u05e9\u05d5\u05ea \u05d4\u05e4\u05ea\u05d5\u05d7","id":"","phone":""}]}];
+
+function goPage(p) {
+  var all = document.querySelectorAll('.page');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
+  var nis = document.querySelectorAll('.ni');
+  for (var i = 0; i < nis.length; i++) nis[i].classList.remove('active');
+  document.getElementById('page-' + p).classList.add('active');
+  var ni = document.getElementById('ni-' + p);
+  if (ni) ni.classList.add('active');
+}
+
+function openM(id) { document.getElementById(id).classList.add('open'); }
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+
+var modals = document.querySelectorAll('.modal-bg');
+for (var i = 0; i < modals.length; i++) {
+  modals[i].addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+}
+
+function switchTab(el, tcId) {
+  var pg = el.closest('.page');
+  var tabs = pg.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  el.classList.add('active');
+  var tcs = pg.querySelectorAll('.tc');
+  for (var i = 0; i < tcs.length; i++) tcs[i].classList.remove('active');
+  document.getElementById(tcId).classList.add('active');
+}
+
+function toggleG(el, grp) {
+  var par = el.parentElement;
+  var btns = par.querySelectorAll('.tb');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+  el.classList.add('active');
+}
+
+function renderTable(filter) {
+  var tbody = document.getElementById('apts-tbody');
+  if (!tbody) return;
+  var source = window.CURRENT_APTS || APTS;
+  var q = typeof filter === 'string' ? filter.trim() : '';
+  var data = source;
+  if (q) {
+    data = [];
+    for (var i = 0; i < source.length; i++) {
+      var a = source[i];
+      var o = a.owners[0] || {};
+      var nm = o.name || '';
+      if (nm.indexOf(q) >= 0 || a.street.indexOf(q) >= 0 || a.tat.indexOf(q) >= 0 || a.helka.indexOf(q) >= 0) data.push(a);
+    }
+  }
+  if (typeof selectedHelkot !== 'undefined' && Object.keys(selectedHelkot).length > 0) {
+    var t1 = []; for (var i=0;i<data.length;i++){if(selectedHelkot[data[i].helka])t1.push(data[i]);} data=t1;
+  }
+  if (typeof selectedAddresses !== 'undefined' && Object.keys(selectedAddresses).length > 0) {
+    var t2 = []; for (var i=0;i<data.length;i++){var ad=(data[i].street+' '+data[i].building).trim();if(selectedAddresses[ad])t2.push(data[i]);} data=t2;
+  }
+  if (typeof visitFilter !== 'undefined' && visitFilter !== 'all') {
+    var t3 = []; for (var i=0;i<data.length;i++){var v=visitedSeqs[data[i].seq]; if(visitFilter==='done'&&v)t3.push(data[i]); else if(visitFilter==='pending'&&!v)t3.push(data[i]);} data=t3;
+  }
+  if (typeof approvalFilter !== 'undefined' && approvalFilter !== 'all') {
+    var t5 = []; for (var i=0;i<data.length;i++){var ap=approvedSeqs[data[i].seq]; var vv=visitedSeqs[data[i].seq]; if(approvalFilter==='approved'&&ap)t5.push(data[i]); else if(approvalFilter==='pending-approval'&&vv&&!ap)t5.push(data[i]);} data=t5;
+  }
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--text3);">לא נמצאו תוצאות<\/td><\/tr>';
+    updateStats(); return;
+  }
+  var rows = '';
+  for (var i = 0; i < data.length; i++) {
+    var a = data[i];
+    var idx = source.indexOf(a);
+    var o = a.owners[0] || {};
+    var nm = o.name || '—';
+    var oxt = a.owners.length > 1 ? ' <small style="color:var(--text3);">(+' + (a.owners.length-1) + ')<\/small>' : '';
+    var ni2 = a.notes ? '<span>⚠️<\/span>' : '';
+    var isV = visitedSeqs[a.seq];
+    var isAp = approvedSeqs[a.seq];
+    var sb = isV ? '<span class="badge bg-g">בוקר<\/span>' : '<span class="badge bg-y">ממתין<\/span>';
+    var sh = isV ? '<div class="pb"><div class="pbg"><div class="pbf" style="width:'+isV+'%"><\/div><\/div><span class="pbn">'+isV+'<\/span><\/div>' : '—';
+    // Approval cell
+    var apCell = '';
+    if (isV) {
+      var apStyle = isAp ? 'background:var(--green);color:white;border:none;' : 'background:rgba(200,147,10,0.12);color:var(--gold);border:1px solid var(--gold);';
+      apCell = '<button class="btn bsm" style="' + apStyle + '" onclick="toggleApproval(\'' + a.seq + '\')">' + (isAp ? '✓ מאושר' : 'ביקורת') + '<\/button>';
+    } else {
+      apCell = '<span style="color:var(--text3);">—<\/span>';
+    }
+    rows += '<tr>';
+    rows += '<td>' + (a.seq||i+1) + '<\/td><td>' + a.gush + '<\/td><td>' + a.helka + '<\/td><td>' + a.tat + '<\/td>';
+    rows += '<td>' + nm + oxt + ni2 + '<\/td>';
+    rows += '<td style="font-size:11px;color:var(--text2);">' + (o.id||'—') + '<\/td>';
+    rows += '<td>' + a.street + '<\/td><td>' + a.building + '<\/td><td>' + a.floor + '<\/td><td>' + a.area + '<\/td>';
+    rows += '<td>' + sb + '<\/td><td>' + sh + '<\/td>';
+    rows += '<td>' + apCell + '<\/td>';
+    rows += '<td><button class="btn bsm ' + (isV ? 'bs' : 'bp') + '" onclick="openVisit(' + idx + ')">' + (isV ? 'פתח' : 'ביקור') + '<\/button><\/td>';
+    rows += '<\/tr>';
+  }
+  tbody.innerHTML = rows;
+  document.getElementById('apts-sub').textContent = 'פינוי-בינוי ראש פינה — ' + data.length + ' יחידות';
+  updateStats();
+}
+
+function filterTable(v) { renderTable(v); }
+
+function openVisit(idx) {
+  var a = APTS[idx];
+  var o = a.owners[0] || {};
+  document.getElementById('visit-sub').textContent = (o.name || '') + ' \u2014 \u05d2\u05d5\u05e9 ' + a.gush + ', \u05d7\u05dc\u05e7\u05d4 ' + a.helka;
+  document.getElementById('v-gush').value = a.gush;
+  document.getElementById('v-helka').value = a.helka;
+  document.getElementById('v-tat').value = a.tat;
+  document.getElementById('v-street').value = a.street;
+  document.getElementById('v-bld').value = a.building;
+  document.getElementById('v-floor').value = a.floor;
+  document.getElementById('v-area').value = a.area;
+  document.getElementById('v-park').value = '\u2014';
+  var ol = document.getElementById('owners-list');
+  var html = '';
+  for (var i = 0; i < a.owners.length; i++) {
+    var own = a.owners[i];
+    html += '<div class="owner-row">';
+    html += '<div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:8px;">\u05d1\u05e2\u05dc\u05d9\u05dd ' + (i + 1) + '<\/div>';
+    html += '<div class="g3">';
+    html += '<div class="fg"><label class="fl">\u05e9\u05dd \u05de\u05dc\u05d0<\/label><input class="fi" value="' + (own.name || '') + '"><\/div>';
+    html += '<div class="fg"><label class="fl">\u05ea.\u05d6.<\/label><input class="fi" value="' + (own.id || '') + '"><\/div>';
+    html += '<div class="fg"><label class="fl">\u05d8\u05dc\u05e4\u05d5\u05df<\/label><input class="fi" type="tel" value="' + (own.phone || '') + '"><\/div>';
+    html += '<\/div><\/div>';
+  }
+  ol.innerHTML = html;
+  document.getElementById('fl-num').textContent = a.floor;
+  var today = new Date();
+  var vdEl = document.getElementById('v-date');
+  if (vdEl && !vdEl.value) {
+    vdEl.value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  }
+  updateApprovalUI(a.tat);
+  goPage('visit');
+  calcScore();
+}
+
+var ownerCnt = 1;
+function addOwner() {
+  ownerCnt++;
+  var list = document.getElementById('owners-list');
+  var div = document.createElement('div');
+  div.className = 'owner-row';
+  div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+    '<div style="font-size:11px;font-weight:700;color:var(--text3);">\u05d1\u05e2\u05dc\u05d9\u05dd ' + ownerCnt + '<\/div>' +
+    '<button class="btn bsm bd" onclick="this.closest(\'.owner-row\').remove()">\u05d4\u05e1\u05e8<\/button>' +
+    '<\/div><div class="g3">' +
+    '<div class="fg"><label class="fl">\u05e9\u05dd \u05de\u05dc\u05d0<\/label><input class="fi"><\/div>' +
+    '<div class="fg"><label class="fl">\u05ea.\u05d6.<\/label><input class="fi"><\/div>' +
+    '<div class="fg"><label class="fl">\u05d8\u05dc\u05e4\u05d5\u05df<\/label><input class="fi" type="tel"><\/div>' +
+    '<\/div>';
+  list.appendChild(div);
+}
+
+function addFloor() {
+  var c = document.getElementById('floor-rows');
+  var div = document.createElement('div');
+  div.className = 'fr';
+  div.innerHTML = '<select class="fs" style="flex:1;"><option>\u05e1\u05dc\u05d5\u05df + \u05de\u05e1\u05d3\u05e8\u05d5\u05df<\/option><option>\u05d7\u05d3\u05e8\u05d9 \u05e9\u05d9\u05e0\u05d4<\/option><option>\u05de\u05d8\u05d1\u05d7<\/option><\/select>' +
+    '<select class="fs" style="flex:1.5;"><option>\u05d8\u05e8\u05d0\u05e6\u05d5<\/option><option>\u05e9\u05d9\u05e9 \u05e4\u05e8\u05dc\u05d8\u05d5<\/option><option>\u05d2\u05e8\u05e0\u05d9\u05d8 \u05e4\u05d5\u05e8\u05e6\u05dc\u05df<\/option><option>\u05e7\u05e8\u05de\u05d9\u05e7\u05d4<\/option><\/select>' +
+    '<button class="btn bsm bd" onclick="this.closest(\'.fr\').remove()">\u05d4\u05e1\u05e8<\/button>';
+  c.appendChild(div);
+}
+
+function addFac() {
+  var c = document.getElementById('extra-fac');
+  var div = document.createElement('div');
+  div.className = 'fr';
+  div.innerHTML = '<input class="fi fn" placeholder="\u05e9\u05dd \u05de\u05e7\u05d3\u05dd">' +
+    '<input class="fi" type="number" placeholder="%" style="width:80px;" onchange="calcScore()">' +
+    '<button class="btn bsm bd" onclick="this.closest(\'.fr\').remove();calcScore()">\u05d4\u05e1\u05e8<\/button>';
+  c.appendChild(div);
+}
+
+function calcRenovScore() {
+  // 1. FLOORING (30 pts) - avg of central (50%) and rooms (50%)
+  var floorRows = document.querySelectorAll('#floor-rows .fr');
+  var centralScore = 0, roomScore = 0, centralFound = false, roomFound = false;
+  var floorMap = {
+    '\u05d2\u05e8\u05e0\u05d9\u05d8 \u05e4\u05d5\u05e8\u05e6\u05dc\u05df': 100,
+    '\u05e4\u05e8\u05e7\u05d8 \u05e2\u05e5': 100,
+    '\u05e7\u05e8\u05de\u05d9\u05e7\u05d4': 60,
+    '\u05e9\u05d9\u05e9 \u05e4\u05e8\u05dc\u05d8\u05d5': 30,
+    '\u05d8\u05e8\u05d0\u05e6\u05d5': 0
+  };
+  for (var i = 0; i < floorRows.length; i++) {
+    var sels = floorRows[i].querySelectorAll('select');
+    if (sels.length < 2) continue;
+    var zone = sels[0].value;
+    var type = sels[1].value;
+    var pts = floorMap[type] !== undefined ? floorMap[type] : 0;
+    if (zone === '\u05db\u05dc \u05d4\u05d3\u05d9\u05e8\u05d4' || zone === '\u05e1\u05dc\u05d5\u05df + \u05de\u05e1\u05d3\u05e8\u05d5\u05df') {
+      centralScore = pts; centralFound = true;
+      roomScore = pts; roomFound = true;
+    } else if (zone === '\u05d7\u05d3\u05e8\u05d9 \u05e9\u05d9\u05e0\u05d4') {
+      roomScore = pts; roomFound = true;
+    }
+  }
+  var floorPts = (centralFound || roomFound) ? ((centralScore + roomScore) / 2) * 0.30 : 0;
+
+  // 2. KITCHEN (30 pts)
+  var kitQEl = document.querySelector('#tc-cond .tb.active[onclick*="kit-q"]');
+  var kitQ = kitQEl ? kitQEl.textContent.trim() : '';
+  var kitBase = kitQ === '\u05d8\u05d5\u05d1\u05d4' ? 30 : kitQ === '\u05e8\u05d2\u05d9\u05dc\u05d4' ? 15 : 0;
+  var kitCabSel = document.querySelector('#tc-cond select[onchange="calcScore()"]');
+  // Find the cabinet select (first select in kitchen card)
+  var kitCard = null;
+  var cards = document.querySelectorAll('#tc-cond .card');
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].querySelector('.ct') && cards[i].querySelector('.ct').textContent === '\u05de\u05d8\u05d1\u05d7') {
+      kitCard = cards[i]; break;
+    }
+  }
+  var kitCabValue = kitCard ? (kitCard.querySelectorAll('select')[0] || {}).value || '' : '';
+  var kitMult = kitCabValue === '\u05d0\u05e8\u05d5\u05e0\u05d5\u05ea \u05ea\u05d7\u05ea\u05d5\u05e0\u05d9\u05dd \u05d1\u05dc\u05d1\u05d3' ? 0.85 : 1.0;
+  var kitPts = kitBase * kitMult;
+
+  // 3. BATHROOM (20 pts)
+  var bathCard = null;
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].querySelector('.ct') && cards[i].querySelector('.ct').textContent === '\u05d7\u05d3\u05e8 \u05e8\u05d7\u05e6\u05d4') {
+      bathCard = cards[i]; break;
+    }
+  }
+  var bathFloorPts = 0, bathCladdingPts = 0;
+  if (bathCard) {
+    var bathSels = bathCard.querySelectorAll('select');
+    var bathFloor = bathSels[0] ? bathSels[0].value : '';
+    var bathClad = bathSels[1] ? bathSels[1].value : '';
+    bathFloorPts = (bathFloor === '\u05d2\u05e8\u05e0\u05d9\u05d8 \u05e4\u05d5\u05e8\u05e6\u05dc\u05df' || bathFloor === '\u05e7\u05e8\u05de\u05d9\u05e7\u05d4') ? 10 : 0;
+    bathCladdingPts = bathClad === '\u05e7\u05e8\u05de\u05d9\u05e7\u05d4' ? 10 : bathClad === '\u05d7\u05e8\u05e1\u05d9\u05e0\u05d4' ? 5 : 0;
+  }
+  var bathQEl = document.querySelector('#tc-cond .tb.active[onclick*="bath-q"]');
+  var bathQ = bathQEl ? bathQEl.textContent.trim() : '';
+  var bathMult = bathQ === '\u05d8\u05d5\u05d1\u05d4' ? 1.0 : bathQ === '\u05e8\u05d2\u05d9\u05dc\u05d4' ? 0.6 : 0;
+  var bathPts = (bathFloorPts + bathCladdingPts) * bathMult;
+
+  // 4. WINDOWS (10 pts)
+  var winPts = 0;
+  var allSels = document.querySelectorAll('#tc-cond .card select');
+  for (var i = 0; i < allSels.length; i++) {
+    var v = allSels[i].value;
+    if (v === '\u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd \u05d7\u05d3\u05e9') { winPts = 10; break; }
+    if (v === '\u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd \u05d9\u05e9\u05df') { winPts = 2; break; }
+  }
+  var windowPts = winPts;
+
+  // 5. AC (5 pts)
+  var acPts = 0;
+  for (var i = 0; i < allSels.length; i++) {
+    var v = allSels[i].value;
+    if (v === '\u05de\u05d6\u05d2\u05df \u05de\u05e8\u05db\u05d6\u05d9' || v === '\u05de\u05d6\u05d2\u05df \u05de\u05e4\u05d5\u05e6\u05dc + \u05de\u05e8\u05db\u05d6\u05d9') { acPts = 5; break; }
+    if (v === '\u05de\u05d6\u05d2\u05e0\u05d9\u05dd \u05de\u05e4\u05d5\u05e6\u05dc\u05d9\u05dd') { acPts = 3.5; break; }
+  }
+  var acFinalPts = acPts;
+
+  // 6. DOORS (5 pts)
+  var intDoorPts = 0, entDoorPts = 0;
+  for (var i = 0; i < allSels.length; i++) {
+    var v = allSels[i].value;
+    if (v === '\u05d7\u05d3\u05e9\u05d5\u05ea') intDoorPts = 3;
+    else if (v === '\u05e8\u05d2\u05d9\u05dc\u05d5\u05ea') intDoorPts = 1.5;
+    if (v === '\u05e4\u05dc\u05d3\u05dc\u05ea') entDoorPts = 2;
+  }
+  var doorPts = intDoorPts + entDoorPts;
+
+  // TOTAL (max 100 pts = 10% bonus)
+  var total = floorPts + kitPts + bathPts + windowPts + acFinalPts + doorPts;
+  var renovBonus = Math.min(total / 6.66, 15);
+
+  // Breakdown text
+  var bd = '\u05e8\u05d9\u05e6\u05d5\u05e3:' + floorPts.toFixed(1) +
+    ' | \u05de\u05d8\u05d1\u05d7:' + kitPts.toFixed(1) +
+    ' | \u05e8\u05d7\u05e6\u05d4:' + bathPts.toFixed(1) +
+    ' | \u05d7\u05dc\u05d5\u05e0\u05d5\u05ea:' + windowPts.toFixed(1) +
+    ' | \u05de\u05d6\u05d2\u05df:' + acFinalPts.toFixed(1) +
+    ' | \u05d3\u05dc\u05ea\u05d5\u05ea:' + doorPts.toFixed(1) +
+    ' | \u05e1\u05da:' + total.toFixed(1) + '/100';
+  var bdEl = document.getElementById('renov-breakdown');
+  if (bdEl) bdEl.textContent = bd;
+
+  return renovBonus;
+}
+
+function calcScore() {
+  var renovBonus = calcRenovScore();
+  var fr1El = document.getElementById('fr1');
+  if (fr1El) fr1El.textContent = '+' + renovBonus.toFixed(1);
+
+  // Other score factors (fr2=accessibility, fr4=view, extra factors)
+  var sels = document.querySelectorAll('#tc-score select[onchange="calcScore()"]');
+  var otherSum = 0;
+  for (var i = 0; i < sels.length; i++) otherSum += parseFloat(sels[i].value || 0);
+
+  var floorTxt = (document.getElementById('v-floor') || {}).value || '';
+  var fl = 1;
+  if (floorTxt.indexOf('\u05e9\u05e0\u05d9\u05d4') >= 0) fl = 2;
+  else if (floorTxt.indexOf('\u05e9\u05dc\u05d9\u05e9\u05d9\u05ea') >= 0) fl = 3;
+  else if (floorTxt.indexOf('\u05e8\u05d1\u05d9\u05e2\u05d9\u05ea') >= 0) fl = 4;
+  var fRed = (fl - 1) * 1.5;
+
+  var totalBonus = renovBonus + otherSum;
+  var score = (100 * (1 + totalBonus / 100) * (1 - fRed / 100)).toFixed(1);
+  var fsc = document.getElementById('final-sc');
+  if (fsc) fsc.textContent = score;
+  var fln = document.getElementById('fl-num');
+  if (fln) fln.textContent = fl;
+  var flf = document.getElementById('fl-fac');
+  if (flf) flf.textContent = (1 - fRed / 100).toFixed(3);
+  var fr3 = document.getElementById('fr3');
+  if (fr3) fr3.textContent = '-' + fRed.toFixed(1);
+
+  var selsArr = [];
+  for (var i = 0; i < sels.length; i++) selsArr.push(parseFloat(sels[i].value || 0));
+  var fids = ['fr2', 'fr4'];
+  for (var i = 0; i < fids.length; i++) {
+    var el = document.getElementById(fids[i]);
+    if (el) el.textContent = (selsArr[i] >= 0 ? '+' : '') + (selsArr[i] || 0).toFixed(1);
+  }
+}
+
+function addPhotos(event) {
+  var files = event.target.files;
+  var grid = document.getElementById('photo-g');
+  for (var i = 0; i < files.length; i++) {
+    (function(f) {
+      var r = new FileReader();
+      r.onload = function(e) {
+        var div = document.createElement('div');
+        div.className = 'pt';
+        div.innerHTML = '<img src="' + e.target.result + '"><button class="dp" onclick="this.parentElement.remove()">x<\/button>';
+        grid.appendChild(div);
+      };
+      r.readAsDataURL(f);
+    })(files[i]);
+  }
+}
+
+function showId(event) {
+  var f = event.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    document.getElementById('id-img').src = e.target.result;
+    document.getElementById('id-prev').style.display = 'block';
+  };
+  r.readAsDataURL(f);
+}
+function clearId() {
+  document.getElementById('id-prev').style.display = 'none';
+  document.getElementById('id-inp').value = '';
+}
+
+
+function toggleApprovalFromScore() {
+  var seq = document.getElementById('v-tat') ? document.getElementById('v-tat').value : '';
+  if (!seq) return;
+  if (approvedSeqs[seq]) {
+    delete approvedSeqs[seq];
+  } else {
+    approvedSeqs[seq] = true;
+  }
+  updateApprovalUI(seq);
+  renderTable(document.querySelector('.si') ? document.querySelector('.si').value : '');
+  updateStats();
+}
+
+function updateApprovalUI(seq) {
+  var btn = document.getElementById('approval-btn');
+  var txt = document.getElementById('approval-status-text');
+  var section = document.getElementById('approval-section');
+  if (!btn) return;
+  var isAp = approvedSeqs[seq];
+  if (isAp) {
+    btn.style.background = 'var(--green)';
+    btn.style.color = 'white';
+    btn.style.borderColor = 'var(--green)';
+    btn.textContent = '\u2713 \u05d1\u05d9\u05e7\u05d5\u05e8 \u05d0\u05d5\u05e9\u05e8 \u05e2\u05dc \u05d9\u05d3\u05d9 \u05d4\u05de\u05e0\u05d4\u05dc';
+    if (txt) txt.textContent = '\u05d0\u05d5\u05e9\u05e8 \u2714';
+    if (section) { section.style.borderColor = 'var(--green)'; section.style.background = 'rgba(22,163,74,0.05)'; }
+  } else {
+    btn.style.background = 'rgba(200,147,10,0.12)';
+    btn.style.color = 'var(--gold)';
+    btn.style.borderColor = 'var(--gold)';
+    btn.textContent = '\u25cb \u05de\u05de\u05ea\u05d9\u05df \u05dc\u05d0\u05d9\u05e9\u05d5\u05e8';
+    if (txt) txt.textContent = '\u05de\u05de\u05ea\u05d9\u05df \u05dc\u05d0\u05d9\u05e9\u05d5\u05e8';
+    if (section) { section.style.borderColor = 'var(--border)'; section.style.background = 'white'; }
+  }
+}
+
+function toggleApproval(seq) {
+  if (approvedSeqs[seq]) delete approvedSeqs[seq];
+  else approvedSeqs[seq] = true;
+  renderTable(document.querySelector('.si') ? document.querySelector('.si').value : '');
+  updateStats();
+}
+
+function setApprovalFilter(f) {
+  approvalFilter = f;
+  var ids = ['aflt-all', 'aflt-approved', 'aflt-pending-approval'];
+  for (var i = 0; i < ids.length; i++) {
+    var b = document.getElementById(ids[i]);
+    if (!b) continue;
+    b.style.fontWeight = '500'; b.style.borderColor = 'var(--border)'; b.style.color = 'var(--text)';
+  }
+  var active = document.getElementById('aflt-' + f);
+  if (active) {
+    active.style.fontWeight = '700';
+    if (f === 'approved') { active.style.borderColor = 'var(--green)'; active.style.color = 'var(--green)'; }
+    else if (f === 'pending-approval') { active.style.borderColor = 'var(--red)'; active.style.color = 'var(--red)'; }
+    else { active.style.borderColor = 'var(--accent)'; active.style.color = 'var(--accent)'; }
+  }
+  renderTable(document.querySelector('.si') ? document.querySelector('.si').value : '');
+}
+
+var visitFilter = 'all';
+var visitedSeqs = {};
+var approvedSeqs = {};
+var approvalFilter = 'all';
+
+function updateStats() {
+  var source = window.CURRENT_APTS || APTS;
+  var total = source.length;
+  var done = 0;
+  for (var i = 0; i < source.length; i++) {
+    if (visitedSeqs[source[i].seq]) done++;
+  }
+  var pending = total - done;
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
+  var pendingPct = total > 0 ? Math.round(pending / total * 100) : 0;
+  var dn = document.getElementById('stat-done-n');
+  var dp = document.getElementById('stat-done-pct');
+  var pn = document.getElementById('stat-pending-n');
+  var pp = document.getElementById('stat-pending-pct');
+  var bar = document.getElementById('stat-progress-bar');
+  var lbl = document.getElementById('stat-total-label');
+  if (dn) dn.textContent = done;
+  if (dp) dp.textContent = '(' + pct + '%)';
+  if (pn) pn.textContent = pending;
+  if (pp) pp.textContent = '(' + pendingPct + '%)';
+  if (bar) bar.style.width = pct + '%';
+  if (lbl) lbl.textContent = done + ' / ' + total;
+}
+
+function setVisitFilter(f) {
+  visitFilter = f;
+  var ids = ['vstatus-all', 'vstatus-done', 'vstatus-pending'];
+  for (var i = 0; i < ids.length; i++) {
+    var b = document.getElementById(ids[i]);
+    if (!b) continue;
+    b.style.fontWeight = '500';
+    b.style.borderColor = 'var(--border)';
+    b.style.color = 'var(--text)';
+  }
+  var active = document.getElementById('vstatus-' + f);
+  if (active) {
+    active.style.fontWeight = '700';
+    if (f === 'done') { active.style.borderColor = 'var(--green)'; active.style.color = 'var(--green)'; }
+    else if (f === 'pending') { active.style.borderColor = 'var(--gold)'; active.style.color = 'var(--gold)'; }
+    else { active.style.borderColor = 'var(--accent)'; active.style.color = 'var(--accent)'; }
+  }
+  renderTable(document.querySelector('.si') ? document.querySelector('.si').value : '');
+}
+
+// ===== FILTER PANEL =====
+var activeHelka = '';
+var activeAddress = '';
+var selectedHelkot = {};
+var selectedAddresses = {};
+
+function toggleFilterPanel() {
+  var panel = document.getElementById('filter-panel');
+  var btn = document.getElementById('filter-btn');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    btn.textContent = '\u25b2 \u05e1\u05d9\u05e0\u05d5\u05df';
+  } else {
+    panel.style.display = 'none';
+    btn.textContent = '\u25bc \u05e1\u05d9\u05e0\u05d5\u05df';
+  }
+}
+
+function onFilterTypeChange() {
+  var type = document.getElementById('flt-type').value;
+  var wrap = document.getElementById('flt-checks-wrap');
+  var label = document.getElementById('flt-checks-label');
+  var checks = document.getElementById('flt-checks');
+  var source = window.CURRENT_APTS || APTS;
+
+  if (!type) { wrap.style.display = 'none'; return; }
+
+  checks.innerHTML = '';
+
+  if (type === 'helka') {
+    label.textContent = '\u05d1\u05d7\u05e8 \u05d7\u05dc\u05e7\u05d5\u05ea:';
+    var helkot = {};
+    for (var i = 0; i < source.length; i++) helkot[source[i].helka] = true;
+    var hl = Object.keys(helkot).sort(function(a,b){ return parseInt(a)-parseInt(b); });
+    for (var i = 0; i < hl.length; i++) {
+      checks.appendChild(makeCheckbox('helka', hl[i], '\u05d7\u05dc\u05e7\u05d4 ' + hl[i], selectedHelkot[hl[i]]));
+    }
+  } else if (type === 'address') {
+    label.textContent = '\u05d1\u05d7\u05e8 \u05db\u05ea\u05d5\u05d1\u05d5\u05ea:';
+    var addresses = {};
+    for (var i = 0; i < source.length; i++) {
+      var addr = (source[i].street + ' ' + source[i].building).trim();
+      if (addr) addresses[addr] = true;
+    }
+    var al = Object.keys(addresses).sort();
+    for (var i = 0; i < al.length; i++) {
+      checks.appendChild(makeCheckbox('address', al[i], al[i], selectedAddresses[al[i]]));
+    }
+  }
+  wrap.style.display = 'block';
+}
+
+function makeCheckbox(type, value, label, checked) {
+  var div = document.createElement('label');
+  div.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:white;cursor:pointer;font-size:13px;user-select:none;transition:all 0.15s;';
+  var cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.value = value;
+  cb.checked = !!checked;
+  cb.style.cssText = 'width:15px;height:15px;cursor:pointer;accent-color:var(--accent);';
+  cb.onchange = function() { onCheckChange(type, value, this.checked); };
+  div.appendChild(cb);
+  div.appendChild(document.createTextNode(label));
+  if (checked) {
+    div.style.background = 'rgba(26,79,189,0.08)';
+    div.style.borderColor = 'var(--accent)';
+    div.style.color = 'var(--accent)';
+    div.style.fontWeight = '600';
+  }
+  cb.addEventListener('change', function() {
+    div.style.background = this.checked ? 'rgba(26,79,189,0.08)' : 'white';
+    div.style.borderColor = this.checked ? 'var(--accent)' : 'var(--border)';
+    div.style.color = this.checked ? 'var(--accent)' : 'var(--text)';
+    div.style.fontWeight = this.checked ? '600' : '400';
+  });
+  return div;
+}
+
+function onCheckChange(type, value, checked) {
+  if (type === 'helka') {
+    if (checked) selectedHelkot[value] = true;
+    else delete selectedHelkot[value];
+  } else if (type === 'address') {
+    if (checked) selectedAddresses[value] = true;
+    else delete selectedAddresses[value];
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  updateFilterMsg();
+  renderTable(document.querySelector('.si') ? document.querySelector('.si').value : '');
+}
+
+function resetFilters() {
+  selectedHelkot = {};
+  selectedAddresses = {};
+  activeHelka = '';
+  activeAddress = '';
+  var ft = document.getElementById('flt-type');
+  var wrap = document.getElementById('flt-checks-wrap');
+  var checks = document.getElementById('flt-checks');
+  if (ft) ft.value = '';
+  if (wrap) wrap.style.display = 'none';
+  if (checks) checks.innerHTML = '';
+  updateFilterMsg();
+  renderTable('');
+}
+
+function updateFilterMsg() {
+  var msg = document.getElementById('filter-active-msg');
+  var btn = document.getElementById('filter-btn');
+  var parts = [];
+  var hkeys = Object.keys(selectedHelkot);
+  var akeys = Object.keys(selectedAddresses);
+  if (hkeys.length > 0) parts.push('\u05d7\u05dc\u05e7\u05d5\u05ea: ' + hkeys.map(function(k){ return k; }).join(', '));
+  if (akeys.length > 0) parts.push('\u05db\u05ea\u05d5\u05d1\u05d5\u05ea: ' + akeys.join(', '));
+  if (parts.length > 0) {
+    msg.style.display = 'block';
+    msg.textContent = '\u05de\u05e1\u05e0\u05df \u05dc\u05e4\u05d9: ' + parts.join(' | ');
+    btn.style.borderColor = 'var(--accent)';
+    btn.style.color = 'var(--accent)';
+    btn.style.fontWeight = '700';
+  } else {
+    msg.style.display = 'none';
+    btn.style.borderColor = 'var(--border)';
+    btn.style.color = 'var(--text)';
+    btn.style.fontWeight = '500';
+  }
+}
+
+function toggleBathOther() {
+  var sel = document.getElementById('bath-floor-type');
+  var inp = document.getElementById('bath-floor-other');
+  if (sel && inp) inp.style.display = sel.value === 'other' ? 'block' : 'none';
+}
+
+renderTable();
+calcScore();
+</script>
+</body>
+</html>
+  <!-- FILTER PANEL -->
